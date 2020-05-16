@@ -1,6 +1,8 @@
 #ifndef CCS881_H
 #define CCS881_H
 
+#include <stdbool.h>
+
 #define STATUS                   0x00
 #define MEAS_MODE                0x01
 #define ALG_RESULT_DATA          0x02
@@ -18,8 +20,12 @@
 
 typedef struct _ccs811_t {
   int fd;
+  unsigned short co2;
+  unsigned short tvoc;
 } ccs811_t;
 
 ccs811_t *ccs811_init(int is2_dev_id);
+bool ccs811_data_available(ccs811_t *ccs811);
+void ccs811_read_sensor(ccs811_t *ccs811);
 
 #endif /* !CCS881_H */

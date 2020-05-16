@@ -2,6 +2,8 @@
  * @see https://raspberry-pi.ksyic.com/page/page/pgp.id/8
  */
 
+#include <stdio.h>
+#include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
 #include <sys/types.h>
@@ -38,15 +40,20 @@ int main(void) {
   struct sockaddr_in addr;
   memcpy(&addr, &ifr.ifr_ifru.ifru_addr, sizeof(struct sockaddr_in));
 
-  lcdText(lcd, 0, 0, "IP ETH0:");
-  lcdText(lcd, 1, 0, inet_ntoa(addr.sin_addr));
-  lcdText(lcd, 2, 0, "CO2:");
-  if (ccs811 == NULL) {
-    lcdText(lcd, 3, 0, "ERROR");
-  } else {
-    lcdText(lcd, 3, 0, "00000000");
+  while(1) {
+    ccs811_read_sensor(ccs811);
+    lcdText(lcd, 0, 0, "IP ETH0:");
+    lcdText(lcd, 1, 0, inet_ntoa(addr.sin_addr));
+    if (ccs811 == NULL) {
+      lcdText(lcd, 2, 0, "CO2: ERROR");
+    } else {
+      char result[17] = "";
+      sprintf(result, "CO2: %5d", ccs811->co2);
+      lcdText(lcd, 2, 0, result);
+    }
+    lcdDraw(lcd);
+    delay(1000);
   }
-  lcdDraw(lcd);
 
   return 0;
 }
